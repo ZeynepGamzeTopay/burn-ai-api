@@ -341,6 +341,10 @@ def predict_route():
         "original_dimensions": f"{original_width}x{original_height}"
     })
 
+@app.route("/healthz", methods=["GET"])
+def health_check():
+    return "OK", 200
+
 # 🔁 En sonda uygulama başlatma:
 if __name__ == "__main__":
     load_ai_models()
