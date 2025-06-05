@@ -1,0 +1,6 @@
+{
+  "First_degree": 0,
+  "Second_degree_superficial": 1,
+  "Second_degree_deep": 2,
+  "Third_degree": 3
+}

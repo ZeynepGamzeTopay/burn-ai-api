@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: burn-ai-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python ai_server.py
+    envVars:
+      - key: GOOGLE_DRIVE_DOWNLOAD
+        value: enabled
