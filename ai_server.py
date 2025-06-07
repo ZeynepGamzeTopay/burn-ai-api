@@ -21,8 +21,27 @@ app = Flask(__name__)
 #CORS(app)  # En basit ve fetch kodunla uyumlu hali
 #CORS(app, resources={r"/predict": {"origins": "https://burn-application-frontend.vercel.app"}}, supports_credentials=True)
 #CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-
+#CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+CORS(
+ app,
+ resources={
+  r"/*": {
+   "origins": "*",
+   "methods": [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+   ],
+   "allow_headers": [
+    "Content-Type",
+    "Authorization",
+   ],
+  }
+ }, supports_credentials=True
+)
 
 # 🧠 Model global değişkenleri
 depth_model = None
