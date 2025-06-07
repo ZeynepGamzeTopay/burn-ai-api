@@ -11,7 +11,8 @@ import os
 import traceback
 import boto3
 import gdown
-
+import gc
+import tensorflow.keras.backend as K
 
 app = Flask(__name__)
 CORS(app)  # En basit ve fetch kodunla uyumlu hali
@@ -201,6 +202,10 @@ def calculate_burn_area_cm2(burned_pixels_in_mask, image_dpi,
 @app.route("/predict", methods=["POST"])
 def predict_route():
     print("✅ /predict endpointine istek geldi")
+    
+    # Bellek temizliği
+    gc.collect()
+
     global depth_model, segmentation_model # Global değişkenlere erişim
 
     # Modellerin yüklenip yüklenmediğini kontrol et
@@ -352,10 +357,10 @@ def predict_route():
 def health_check():
     return "OK", 200
 
-# 🔁 En sonda uygulama başlatma:
-if __name__ == "__main__":
-    #load_ai_models()
-    app.run(host="0.0.0.0", port=5000)
+# # 🔁 En sonda uygulama başlatma:
+# if __name__ == "__main__":
+#     #load_ai_models()
+#     app.run(host="0.0.0.0", port=5000)
 
     
 
