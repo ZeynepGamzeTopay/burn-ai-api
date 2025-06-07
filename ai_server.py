@@ -14,7 +14,9 @@ import gdown
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
+CORS(app)  # En basit ve fetch kodunla uyumlu hali
+#CORS(app, resources={r"/predict": {"origins": "https://burn-application-frontend.vercel.app"}}, supports_credentials=True)
+#CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
 
 
 # 🧠 Model global değişkenleri
@@ -198,6 +200,7 @@ def calculate_burn_area_cm2(burned_pixels_in_mask, image_dpi,
 # API ENDPOINT
 @app.route("/predict", methods=["POST"])
 def predict_route():
+    print("✅ /predict endpointine istek geldi")
     global depth_model, segmentation_model # Global değişkenlere erişim
 
     # Modellerin yüklenip yüklenmediğini kontrol et
