@@ -18,7 +18,18 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 app = Flask(__name__)
-CORS(app)  # En basit ve fetch kodunla uyumlu hali
+# 🔐 Sadece belirli frontend origin'lerine izin veriyoruz
+CORS(app, resources={r"/*": {"origins": [
+    "https://burn-application-frontend.vercel.app",
+    "https://burn-application-frontend.vercel.app/",
+    "https://burn-application-frontend-git-main-zeynepgamzetopays-projects.vercel.app",
+    "https://burn-application-frontend-git-main-zeynepgamzetopays-projects.vercel.app/",
+    "https://burn-application-frontend-zeynepgamzetopays-projects.vercel.app",
+    "https://burn-application-frontend-zeynepgamzetopays-projects.vercel.app/",
+    "https://burn-application-frontend-rlqzzskn4-zeynepgamzetopays-projects.vercel.app",
+    "https://burn-application-frontend-rlqzzskn4-zeynepgamzetopays-projects.vercel.app/"
+]}})
+#CORS(app)  # En basit ve fetch kodunla uyumlu hali
 #CORS(app, resources={r"/predict": {"origins": "https://burn-application-frontend.vercel.app"}}, supports_credentials=True)
 #CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
 
