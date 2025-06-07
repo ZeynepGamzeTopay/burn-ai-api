@@ -13,6 +13,9 @@ import boto3
 import gdown
 import gc
 import tensorflow.keras.backend as K
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 app = Flask(__name__)
 CORS(app)  # En basit ve fetch kodunla uyumlu hali
@@ -43,7 +46,7 @@ SEG_MODEL_GDRIVE_ID = "1WnazvELJLG53Pdim1y1aJwxfxFupgWcL"   # segmentation_model
 def load_ai_models():
     global depth_model, segmentation_model
     print("Klasör içeriği:", os.listdir(SCRIPT_DIR))
-    
+
     try:
         depth_model_path = os.path.join(SCRIPT_DIR, "best_model.h5")
         if not os.path.exists(depth_model_path):
@@ -203,6 +206,8 @@ def calculate_burn_area_cm2(burned_pixels_in_mask, image_dpi,
 @app.route("/predict", methods=["POST"])
 def predict_route():
     print("✅ /predict endpointine istek geldi")
+    print("🔍 Form alanları:", request.form)
+    print("🔍 Dosyalar:", request.files)
     
     # Bellek temizliği
     gc.collect()
