@@ -16,6 +16,9 @@ import gdown
 app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
 
+# 🔁 Uygulama başladığında modeller yüklensin
+load_ai_models()
+
 # 🧠 Model global değişkenleri
 depth_model = None
 segmentation_model = None
@@ -347,7 +350,7 @@ def health_check():
 
 # 🔁 En sonda uygulama başlatma:
 if __name__ == "__main__":
-    load_ai_models()
+    #load_ai_models()
     app.run(host="0.0.0.0", port=5000)
 
     
