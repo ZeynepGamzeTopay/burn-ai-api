@@ -51,16 +51,16 @@ def load_ai_models():
         print(f"❌ Derinlik modeli yüklenirken hata: {e}")
         traceback.print_exc()
 
-    try:
-        seg_model_path = os.path.join(SCRIPT_DIR, "segmentation_model.h5")
-        if not os.path.exists(seg_model_path):
-            print("📥 Segmentasyon modeli bulunamadı, Google Drive'dan indiriliyor...")
-            download_model_from_drive(SEG_MODEL_GDRIVE_ID, seg_model_path)
-        segmentation_model = tf.keras.models.load_model(seg_model_path, compile=False)
-        print("✅ Segmentasyon modeli yüklendi.")
-    except Exception as e:
-        print(f"❌ Segmentasyon modeli yüklenirken hata: {e}")
-        traceback.print_exc()
+    # try:
+    #     seg_model_path = os.path.join(SCRIPT_DIR, "segmentation_model.h5")
+    #     if not os.path.exists(seg_model_path):
+    #         print("📥 Segmentasyon modeli bulunamadı, Google Drive'dan indiriliyor...")
+    #         download_model_from_drive(SEG_MODEL_GDRIVE_ID, seg_model_path)
+    #     segmentation_model = tf.keras.models.load_model(seg_model_path, compile=False)
+    #     print("✅ Segmentasyon modeli yüklendi.")
+    # except Exception as e:
+    #     print(f"❌ Segmentasyon modeli yüklenirken hata: {e}")
+    #     traceback.print_exc()
 
 # HEMEN ALTINA çağır:
 load_ai_models()
@@ -248,99 +248,99 @@ def predict_route():
         print(f"Derinlik tahmini sırasında hata: {e}")
         traceback.print_exc()
 
-    # 2. Yanık Alanı ve Yüzdesi Tahmini
-    burn_area_cm2_val = 0.0
-    burn_percentage_val = 0.0
+    # # 2. Yanık Alanı ve Yüzdesi Tahmini
+    # burn_area_cm2_val = 0.0
+    # burn_percentage_val = 0.0
 
-    if segmentation_model is not None:
-        try:
-            # Segmentasyon modelinin beklediği input boyutlarını al
-            seg_model_input_shape = segmentation_model.input_shape 
-            if isinstance(seg_model_input_shape, list): # Eğer model birden fazla input alıyorsa
-                seg_model_input_shape = seg_model_input_shape[0] # İlk input'un şeklini al
+    # if segmentation_model is not None:
+    #     try:
+    #         # Segmentasyon modelinin beklediği input boyutlarını al
+    #         seg_model_input_shape = segmentation_model.input_shape 
+    #         if isinstance(seg_model_input_shape, list): # Eğer model birden fazla input alıyorsa
+    #             seg_model_input_shape = seg_model_input_shape[0] # İlk input'un şeklini al
 
-            # input_shape (None, H, W, C) veya (H, W, C) olabilir. H ve W'yi al.
-            # Model.input_shape TensorFlow/Keras versiyonuna göre tuple veya list of tuples dönebilir.
-            seg_target_height = seg_model_input_shape[1] if seg_model_input_shape[1] is not None else 256 # Varsayılan
-            seg_target_width = seg_model_input_shape[2] if seg_model_input_shape[2] is not None else 256  # Varsayılan
+    #         # input_shape (None, H, W, C) veya (H, W, C) olabilir. H ve W'yi al.
+    #         # Model.input_shape TensorFlow/Keras versiyonuna göre tuple veya list of tuples dönebilir.
+    #         seg_target_height = seg_model_input_shape[1] if seg_model_input_shape[1] is not None else 256 # Varsayılan
+    #         seg_target_width = seg_model_input_shape[2] if seg_model_input_shape[2] is not None else 256  # Varsayılan
             
-            print(f"Segmentasyon için hedef boyutlar: H={seg_target_height}, W={seg_target_width}")
+    #         print(f"Segmentasyon için hedef boyutlar: H={seg_target_height}, W={seg_target_width}")
 
-            processed_img_seg = preprocess_image_for_segmentation(pil_image.copy(), 
-                                                                  target_height=seg_target_height, 
-                                                                  target_width=seg_target_width)
+    #         processed_img_seg = preprocess_image_for_segmentation(pil_image.copy(), 
+    #                                                               target_height=seg_target_height, 
+    #                                                               target_width=seg_target_width)
             
-            # Model tahminini al, [0] ile batch boyutunu kaldır ([H, W, C] veya [H, W] elde et)
-            segmentation_mask_pred_raw = segmentation_model.predict(processed_img_seg)[0] 
+    #         # Model tahminini al, [0] ile batch boyutunu kaldır ([H, W, C] veya [H, W] elde et)
+    #         segmentation_mask_pred_raw = segmentation_model.predict(processed_img_seg)[0] 
 
-            # Maskenin gerçek boyutlarını al (preprocess sonrası)
-            mask_height_for_calc = segmentation_mask_pred_raw.shape[0]
-            mask_width_for_calc = segmentation_mask_pred_raw.shape[1]
+    #         # Maskenin gerçek boyutlarını al (preprocess sonrası)
+    #         mask_height_for_calc = segmentation_mask_pred_raw.shape[0]
+    #         mask_width_for_calc = segmentation_mask_pred_raw.shape[1]
             
-            print(f"Segmentasyon modeli çıktı (maske) boyutu: {mask_width_for_calc}x{mask_height_for_calc}")
-            print(f"Ham segmentasyon maskesi şekli: {segmentation_mask_pred_raw.shape}")
+    #         print(f"Segmentasyon modeli çıktı (maske) boyutu: {mask_width_for_calc}x{mask_height_for_calc}")
+    #         print(f"Ham segmentasyon maskesi şekli: {segmentation_mask_pred_raw.shape}")
 
-            # --- BU KISMI SEGMENTASYON MODELİNİZİN ÇIKTISINA GÖRE ÇOK DİKKATLİ AYARLAYIN! ---
-            # Modelinizin kaç sınıfı var? Yanık sınıfının indeksi nedir? Çıktı sigmoid mi softmax mı?
-            burn_pixels_mask = np.zeros((mask_height_for_calc, mask_width_for_calc), dtype=np.uint8) # Varsayılan boş maske
+    #         # --- BU KISMI SEGMENTASYON MODELİNİZİN ÇIKTISINA GÖRE ÇOK DİKKATLİ AYARLAYIN! ---
+    #         # Modelinizin kaç sınıfı var? Yanık sınıfının indeksi nedir? Çıktı sigmoid mi softmax mı?
+    #         burn_pixels_mask = np.zeros((mask_height_for_calc, mask_width_for_calc), dtype=np.uint8) # Varsayılan boş maske
 
-            if len(segmentation_mask_pred_raw.shape) == 3 and segmentation_mask_pred_raw.shape[-1] == 1:
-                # Binary segmentasyon (yanık/yanık değil), çıktı [H, W, 1] ve sigmoid ise:
-                print("İkili segmentasyon maskesi (tek kanal) işleniyor.")
-                burn_pixels_mask = (segmentation_mask_pred_raw > 0.5).astype(np.uint8).squeeze(axis=-1)
-            elif len(segmentation_mask_pred_raw.shape) == 2:
-                # Binary segmentasyon, çıktı zaten [H, W] (örn: bazı modeller doğrudan binary mask dönebilir)
-                print("İkili segmentasyon maskesi (kanalsız) işleniyor.")
-                burn_pixels_mask = (segmentation_mask_pred_raw > 0.5).astype(np.uint8)
-            elif len(segmentation_mask_pred_raw.shape) == 3 and segmentation_mask_pred_raw.shape[-1] > 1:
-                # Multi-class segmentasyon, çıktı [H, W, NumClasses] ve softmax ise:
-                NUM_CLASSES = segmentation_mask_pred_raw.shape[-1]
-                print(f"Çok sınıflı segmentasyon maskesi işleniyor. Sınıf sayısı: {NUM_CLASSES}")
-                # ÖNEMLİ: Yanık sınıfınızın doğru indeksini (veya indekslerini) buraya girin!
-                # Örneğin, 0: arka plan, 1: yanık. Veya farklı dereceler için farklı sınıflar.
-                # Eğer birden fazla sınıf "yanık" olarak kabul edilecekse, bu mantığı genişletin.
-                BURN_CLASS_INDEX = 1 # BU DEĞERİ KESİNLİKLE KONTROL EDİN VE GÜNCELLEYİN!
-                if BURN_CLASS_INDEX < NUM_CLASSES:
-                    burn_pixels_mask = (np.argmax(segmentation_mask_pred_raw, axis=-1) == BURN_CLASS_INDEX).astype(np.uint8)
-                    print(f"Yanık sınıfı indeksi {BURN_CLASS_INDEX} kullanıldı.")
-                else:
-                    print(f"HATA: BURN_CLASS_INDEX ({BURN_CLASS_INDEX}) sınıf sayısından ({NUM_CLASSES}) büyük veya eşit olamaz! Yanık alanı 0 olarak hesaplanacak.")
-            else:
-                print(f"Uyarı: Beklenmedik segmentasyon maskesi şekli: {segmentation_mask_pred_raw.shape}. Yanık alanı 0 olarak hesaplanacak.")
-            # --- AYARLAMA BİTİŞ ---
+    #         if len(segmentation_mask_pred_raw.shape) == 3 and segmentation_mask_pred_raw.shape[-1] == 1:
+    #             # Binary segmentasyon (yanık/yanık değil), çıktı [H, W, 1] ve sigmoid ise:
+    #             print("İkili segmentasyon maskesi (tek kanal) işleniyor.")
+    #             burn_pixels_mask = (segmentation_mask_pred_raw > 0.5).astype(np.uint8).squeeze(axis=-1)
+    #         elif len(segmentation_mask_pred_raw.shape) == 2:
+    #             # Binary segmentasyon, çıktı zaten [H, W] (örn: bazı modeller doğrudan binary mask dönebilir)
+    #             print("İkili segmentasyon maskesi (kanalsız) işleniyor.")
+    #             burn_pixels_mask = (segmentation_mask_pred_raw > 0.5).astype(np.uint8)
+    #         elif len(segmentation_mask_pred_raw.shape) == 3 and segmentation_mask_pred_raw.shape[-1] > 1:
+    #             # Multi-class segmentasyon, çıktı [H, W, NumClasses] ve softmax ise:
+    #             NUM_CLASSES = segmentation_mask_pred_raw.shape[-1]
+    #             print(f"Çok sınıflı segmentasyon maskesi işleniyor. Sınıf sayısı: {NUM_CLASSES}")
+    #             # ÖNEMLİ: Yanık sınıfınızın doğru indeksini (veya indekslerini) buraya girin!
+    #             # Örneğin, 0: arka plan, 1: yanık. Veya farklı dereceler için farklı sınıflar.
+    #             # Eğer birden fazla sınıf "yanık" olarak kabul edilecekse, bu mantığı genişletin.
+    #             BURN_CLASS_INDEX = 1 # BU DEĞERİ KESİNLİKLE KONTROL EDİN VE GÜNCELLEYİN!
+    #             if BURN_CLASS_INDEX < NUM_CLASSES:
+    #                 burn_pixels_mask = (np.argmax(segmentation_mask_pred_raw, axis=-1) == BURN_CLASS_INDEX).astype(np.uint8)
+    #                 print(f"Yanık sınıfı indeksi {BURN_CLASS_INDEX} kullanıldı.")
+    #             else:
+    #                 print(f"HATA: BURN_CLASS_INDEX ({BURN_CLASS_INDEX}) sınıf sayısından ({NUM_CLASSES}) büyük veya eşit olamaz! Yanık alanı 0 olarak hesaplanacak.")
+    #         else:
+    #             print(f"Uyarı: Beklenmedik segmentasyon maskesi şekli: {segmentation_mask_pred_raw.shape}. Yanık alanı 0 olarak hesaplanacak.")
+    #         # --- AYARLAMA BİTİŞ ---
 
-            burned_pixel_count_in_mask = np.sum(burn_pixels_mask)
-            print(f"Segmentasyon maskesindeki ({mask_width_for_calc}x{mask_height_for_calc}) yanık piksel sayısı: {burned_pixel_count_in_mask}")
+    #         burned_pixel_count_in_mask = np.sum(burn_pixels_mask)
+    #         print(f"Segmentasyon maskesindeki ({mask_width_for_calc}x{mask_height_for_calc}) yanık piksel sayısı: {burned_pixel_count_in_mask}")
 
-            if burned_pixel_count_in_mask > 0:
-                burn_area_cm2_val = calculate_burn_area_cm2(
-                    burned_pixel_count_in_mask,
-                    image_dpi,
-                    mask_width_for_calc, # Segmentasyon maskesinin genişliği
-                    mask_height_for_calc, # Segmentasyon maskesinin yüksekliği
-                    original_width,       # Orijinal resmin genişliği
-                    original_height       # Orijinal resmin yüksekliği
-                )
-                tbsa_cm2 = calculate_tbsa_cm2(height_cm, weight_kg)
-                if tbsa_cm2 > 0:
-                    burn_percentage_val = (burn_area_cm2_val / tbsa_cm2) * 100.0
-                else:
-                    print("TBSA hesaplanamadı (boy/kilo sıfır veya geçersiz). Yanık yüzdesi 0 olacak.")
-            else:
-                 print("Maskede yanık piksel bulunamadı. Alan ve yüzde 0 olacak.")
+    #         if burned_pixel_count_in_mask > 0:
+    #             burn_area_cm2_val = calculate_burn_area_cm2(
+    #                 burned_pixel_count_in_mask,
+    #                 image_dpi,
+    #                 mask_width_for_calc, # Segmentasyon maskesinin genişliği
+    #                 mask_height_for_calc, # Segmentasyon maskesinin yüksekliği
+    #                 original_width,       # Orijinal resmin genişliği
+    #                 original_height       # Orijinal resmin yüksekliği
+    #             )
+    #             tbsa_cm2 = calculate_tbsa_cm2(height_cm, weight_kg)
+    #             if tbsa_cm2 > 0:
+    #                 burn_percentage_val = (burn_area_cm2_val / tbsa_cm2) * 100.0
+    #             else:
+    #                 print("TBSA hesaplanamadı (boy/kilo sıfır veya geçersiz). Yanık yüzdesi 0 olacak.")
+    #         else:
+    #              print("Maskede yanık piksel bulunamadı. Alan ve yüzde 0 olacak.")
 
-        except Exception as e:
-            print(f"Segmentasyon, alan veya yüzde hesaplama sırasında genel hata: {e}")
-            traceback.print_exc()
-    else:
-        print("Segmentasyon modeli yüklenmemiş veya bulunamadı. Alan ve yüzde hesaplaması atlanıyor.")
+    #     except Exception as e:
+    #         print(f"Segmentasyon, alan veya yüzde hesaplama sırasında genel hata: {e}")
+    #         traceback.print_exc()
+    # else:
+    #     print("Segmentasyon modeli yüklenmemiş veya bulunamadı. Alan ve yüzde hesaplaması atlanıyor.")
 
     # Sonuçları JSON olarak döndür
     return jsonify({
         "burn_depth": predicted_burn_depth,
         "confidence_depth": round(confidence_depth, 4), # Güven skorunu da ekleyelim
-        "burn_area_cm2": round(burn_area_cm2_val, 2),
-        "burn_percentage": round(burn_percentage_val, 2),
+        "burn_area_cm2": 0.0, #round(burn_area_cm2_val, 2),
+        "burn_percentage": 0.0, #round(burn_percentage_val, 2),
         "detected_dpi": round(image_dpi, 2),
         "original_dimensions": f"{original_width}x{original_height}"
     })
