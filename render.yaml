@@ -2,11 +2,9 @@ services:
   - type: web
     name: burn-ai-api
     env: python
-    plan: free
+    plan: standard
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -w 1 -b 0.0.0.0:10000 --timeout 300 ai_server:app
+    startCommand: gunicorn ai_server:app --bind 0.0.0.0:$PORT
     envVars:
       - key: GOOGLE_DRIVE_DOWNLOAD
         value: enabled
-      - key: FLASK_PORT
-        value: 10000
