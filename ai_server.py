@@ -16,8 +16,6 @@ import gdown
 app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "*"}}, supports_credentials=True)
 
-# 🔁 Uygulama başladığında modeller yüklensin
-load_ai_models()
 
 # 🧠 Model global değişkenleri
 depth_model = None
@@ -63,6 +61,9 @@ def load_ai_models():
     except Exception as e:
         print(f"❌ Segmentasyon modeli yüklenirken hata: {e}")
         traceback.print_exc()
+
+# HEMEN ALTINA çağır:
+load_ai_models()
 
 # # 📦 S3 bilgileri
 # S3_BUCKET = "burn-models-bucket"  # Kendi bucket adınla değiştir
