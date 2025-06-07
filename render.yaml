@@ -4,7 +4,9 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python ai_server.py
+    startCommand: python ai_server.py  # veya alternatif olarak Flask/Gunicorn komutu (aşağıda anlatıldı)
     envVars:
       - key: GOOGLE_DRIVE_DOWNLOAD
         value: enabled
+      - key: FLASK_PORT
+        value: 10000  # Render otomatik algılar ama istersen sabitleyebilirsin
