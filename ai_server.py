@@ -42,7 +42,8 @@ SEG_MODEL_GDRIVE_ID = "1WnazvELJLG53Pdim1y1aJwxfxFupgWcL"   # segmentation_model
 
 def load_ai_models():
     global depth_model, segmentation_model
-
+    print("Klasör içeriği:", os.listdir(SCRIPT_DIR))
+    
     try:
         depth_model_path = os.path.join(SCRIPT_DIR, "best_model.h5")
         if not os.path.exists(depth_model_path):
