@@ -204,7 +204,7 @@ def calculate_burn_area_cm2(burned_pixels_in_mask, image_dpi,
     return total_burn_area_cm2
 
 # API ENDPOINT
-@app.route("/api/predict", methods=["POST"])
+@app.route("/predict", methods=["POST"])
 def predict_route():
     print("✅ /predict endpointine istek geldi")
     print("🔍 Form alanları:", request.form)
